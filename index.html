@@ -73,47 +73,88 @@
         <div id="message" class="message"></div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDiw3bXv8nn7spyxvlL_DDyG9idkKdswLI",
-            authDomain: "tanmay-71094.firebaseapp.com",
-            databaseURL: "https://tanmay-71094-default-rtdb.firebaseio.com",
-            projectId: "tanmay-71094",
-            storageBucket: "tanmay-71094.appspot.com",
-            messagingSenderId: "411921161325",
-            appId: "1:411921161325:android:69c8bfe02ed3f0218b7364"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database(app);
-
-        function verifyKey() {
+        async function verifyKey() {
             const enteredKey = document.getElementById('key-input').value;
+            const repoOwner = 'TANMAYAYUSHKABAAP';  // Replace with your GitHub username
+            const repoName = 'KEYSONLY';         // Replace with your GitHub repo name
+            const filePath = 'keys.json';              // Path to the file in your repo where keys are stored
+            const githubToken = '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';   // Replace with your GitHub token
 
-            // Search the Firebase database for the entered key
-            database.ref('keys').orderByChild('key').equalTo(enteredKey).once('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    // Get the key data
-                    const keyData = snapshot.val();
-                    const keyDetails = Object.values(keyData)[0];
+            // Fetch keys file from GitHub
+            const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            });
 
-                    // Check expiry time
+            if (response.ok) {
+                const json = await response.json();
+                const keys = JSON.parse(atob(json.content)); // Decode base64 content to JSON
+
+                // Search for the entered key
+                const keyData = keys.find(key => key.key === enteredKey);
+
+                if (keyData) {
                     const currentTime = new Date().getTime();
-                    if (currentTime < keyDetails.expiryTime) {
+
+                    // Check if the key is expired
+                    if (currentTime < keyData.expiryTime) {
                         document.getElementById('message').innerHTML = '<span style="color: green;">Key is valid!</span>';
                     } else {
                         document.getElementById('message').innerHTML = '<span style="color: red;">Key has expired!</span>';
+
+                        // Remove the expired key from the GitHub repository
+                        const updatedKeys = keys.filter(key => key.key !== enteredKey);
+                        await updateKeysOnGitHub(updatedKeys);
                     }
                 } else {
                     document.getElementById('message').innerHTML = '<span style="color: red;">Invalid key!</span>';
                 }
+            } else {
+                document.getElementById('message').innerHTML = '<span style="color: red;">Failed to fetch keys.</span>';
+            }
+        }
+
+        async function updateKeysOnGitHub(keys) {
+            const repoOwner = 'TANMAYAYUSHKABAAP';  // Replace with your GitHub username
+            const repoName = 'KEYSONLY';         // Replace with your GitHub repo name
+            const filePath = 'keys.json';              // Path to the file in your repo where keys are stored
+            const githubToken = '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';   // Replace with your GitHub token
+
+            // Fetch the existing file details from GitHub
+            const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
             });
+
+            if (response.ok) {
+                const json = await response.json();
+                const sha = json.sha; // Get the SHA of the file to update it
+
+                // Update the keys file on GitHub with the new data
+                await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Remove expired key',
+                        committer: {
+                            name: 'Your Name',
+                            email: 'youremail@example.com'
+                        },
+                        content: btoa(JSON.stringify(keys)), // Base64 encode the content
+                        sha: sha // The SHA of the file to update (required for the PUT request)
+                    })
+                });
+
+                document.getElementById('message').innerHTML = '<span style="color: green;">Key expired and removed successfully!</span>';
+            } else {
+                document.getElementById('message').innerHTML = '<span style="color: red;">Failed to update keys.</span>';
+            }
         }
     </script>
 </body>
