@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access Verification</title>
-
+    <title>Key Verification</title>
+    
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    
+
     <script>
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDiw3bXv8nn7spyxvlL_DDyG9idkKdswLI",
             authDomain: "tanmay-71094.firebaseapp.com",
@@ -22,19 +21,99 @@
             measurementId: "G-V2J59X5B2K"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database(app);
     </script>
 
+    <style>
+        body {
+            background-color: #282c34;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        input, button {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            background-color: #4b79a1;
+            color: white;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #2c3e50;
+        }
+
+        button:hover {
+            background-color: #567d9f;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-size: 16px;
+            color: red;
+        }
+    </style>
 </head>
 <body>
-    <!-- Your page content here -->
+    <div class="container">
+        <h1>Enter Your Key</h1>
+        <input type="text" id="user-key" placeholder="Enter your key" />
+        <button onclick="verifyKey()">Verify Key</button>
 
-    <!-- Your script for key verification goes here -->
+        <div id="message" class="message"></div>
+    </div>
+
     <script>
         async function verifyKey() {
-            // Your existing key verification code
+            const userKey = document.getElementById('user-key').value;
+
+            // Fetch the key from Firebase
+            firebase.database().ref('keys/' + userKey).once('value')
+                .then((snapshot) => {
+                    const keyData = snapshot.val();
+
+                    if (keyData) {
+                        const currentTime = new Date().getTime();
+                        if (currentTime < keyData.expiryTime) {
+                            document.getElementById('message').innerText = 'Key Verified Successfully!';
+                            document.getElementById('message').style.color = 'lightgreen';
+                        } else {
+                            document.getElementById('message').innerText = 'Key Expired!';
+                            document.getElementById('message').style.color = 'red';
+                        }
+                    } else {
+                        document.getElementById('message').innerText = 'Invalid Key!';
+                        document.getElementById('message').style.color = 'red';
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching key from Firebase: ", error);
+                });
         }
     </script>
 </body>
