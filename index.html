@@ -3,28 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Verification</title>
-    
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDiw3bXv8nn7spyxvlL_DDyG9idkKdswLI",
-            authDomain: "tanmay-71094.firebaseapp.com",
-            databaseURL: "https://tanmay-71094-default-rtdb.firebaseio.com",
-            projectId: "tanmay-71094",
-            storageBucket: "tanmay-71094.appspot.com",
-            messagingSenderId: "411921161325",
-            appId: "1:411921161325:android:69c8bfe02ed3f0218b7364",
-            measurementId: "G-V2J59X5B2K"
-        };
-
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database(app);
-    </script>
-
+    <title>Access Key Validation</title>
     <style>
         body {
             background-color: #282c34;
@@ -72,6 +51,12 @@
             background-color: #567d9f;
         }
 
+        .output {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #a4d7fd;
+        }
+
         .message {
             margin-top: 15px;
             font-size: 16px;
@@ -81,39 +66,54 @@
 </head>
 <body>
     <div class="container">
-        <h1>Enter Your Key</h1>
-        <input type="text" id="user-key" placeholder="Enter your key" />
+        <h1>Enter Access Key</h1>
+        <input type="text" id="key-input" placeholder="Enter your key" />
         <button onclick="verifyKey()">Verify Key</button>
 
         <div id="message" class="message"></div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
     <script>
-        async function verifyKey() {
-            const userKey = document.getElementById('user-key').value;
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDiw3bXv8nn7spyxvlL_DDyG9idkKdswLI",
+            authDomain: "tanmay-71094.firebaseapp.com",
+            databaseURL: "https://tanmay-71094-default-rtdb.firebaseio.com",
+            projectId: "tanmay-71094",
+            storageBucket: "tanmay-71094.appspot.com",
+            messagingSenderId: "411921161325",
+            appId: "1:411921161325:android:69c8bfe02ed3f0218b7364"
+        };
 
-            // Fetch the key from Firebase
-            firebase.database().ref('keys/' + userKey).once('value')
-                .then((snapshot) => {
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
+
+        function verifyKey() {
+            const enteredKey = document.getElementById('key-input').value;
+
+            // Search the Firebase database for the entered key
+            database.ref('keys').orderByChild('key').equalTo(enteredKey).once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    // Get the key data
                     const keyData = snapshot.val();
+                    const keyDetails = Object.values(keyData)[0];
 
-                    if (keyData) {
-                        const currentTime = new Date().getTime();
-                        if (currentTime < keyData.expiryTime) {
-                            document.getElementById('message').innerText = 'Key Verified Successfully!';
-                            document.getElementById('message').style.color = 'lightgreen';
-                        } else {
-                            document.getElementById('message').innerText = 'Key Expired!';
-                            document.getElementById('message').style.color = 'red';
-                        }
+                    // Check expiry time
+                    const currentTime = new Date().getTime();
+                    if (currentTime < keyDetails.expiryTime) {
+                        document.getElementById('message').innerHTML = '<span style="color: green;">Key is valid!</span>';
                     } else {
-                        document.getElementById('message').innerText = 'Invalid Key!';
-                        document.getElementById('message').style.color = 'red';
+                        document.getElementById('message').innerHTML = '<span style="color: red;">Key has expired!</span>';
                     }
-                })
-                .catch((error) => {
-                    console.error("Error fetching key from Firebase: ", error);
-                });
+                } else {
+                    document.getElementById('message').innerHTML = '<span style="color: red;">Invalid key!</span>';
+                }
+            });
         }
     </script>
 </body>
