@@ -18,28 +18,31 @@
         }
 
         .container {
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.8);
             padding: 40px;
             border-radius: 20px;
             text-align: center;
-            width: 350px;
+            width: 100%;
+            max-width: 400px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             color: white;
             z-index: 1;
+            margin: 20px;
         }
 
         h1 {
             font-size: 24px;
             color: white;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         input, button {
             background-color: #4b79a1;
             color: white;
             border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px;
+            padding: 12px;
+            margin: 10px 0;
             width: 100%;
             font-size: 16px;
             border-radius: 8px;
@@ -58,7 +61,6 @@
             margin-top: 20px;
         }
 
-        /* Particle effect for background */
         .particle {
             position: absolute;
             width: 10px;
@@ -80,6 +82,18 @@
             100% {
                 transform: scale(0) translateX(200px) translateY(200px);
                 opacity: 0;
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                max-width: 90%;
+            }
+
+            h1 {
+                font-size: 20px;
             }
         }
     </style>
@@ -135,15 +149,15 @@
                     messageElement.style.color = 'lightgreen';
                     messageElement.innerText = 'Access Granted!';
                     setTimeout(() => {
-                        window.location.href = 'main.html'; 
+                        window.location.href = 'main.html'; // Redirect to main page after successful verification
                     }, 1000);
                 } else {
                     messageElement.style.color = 'red';
-                    messageElement.innerText = 'Your key has expired!';
+                    messageElement.innerText = 'The access key has expired.';
                 }
             } else {
                 messageElement.style.color = 'red';
-                messageElement.innerText = 'Invalid Key. Please check and try again.';
+                messageElement.innerText = 'Invalid access key.';
             }
         }
     </script>
