@@ -3,145 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Key Generator</title>
+    <title>Key Generator</title>
     <style>
         body {
-            background-color: #1a1a1a;
-            margin: 0;
-            height: 100vh;
+            background-color: #282c34;
+            color: white;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            position: relative;
-            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            margin: 0;
         }
 
         .container {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 40px;
-            border-radius: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
             text-align: center;
-            width: 350px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            color: white;
-            z-index: 1;
         }
 
         h1 {
-            font-size: 24px;
-            color: white;
             margin-bottom: 20px;
+            color: white;
         }
 
-        select, button {
+        select, input, button {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
             background-color: #4b79a1;
             color: white;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 10px;
-            width: 100%;
-            font-size: 16px;
-            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
         }
 
-        select:focus, button:focus {
-            outline: none;
+        button {
+            background-color: #2c3e50;
+        }
+
+        button:hover {
             background-color: #567d9f;
         }
 
-        .generated-key {
-            font-size: 16px;
-            color: #a4d7fd;
+        .output {
             margin-top: 20px;
+            font-size: 18px;
+            color: #a4d7fd;
         }
 
-        /* Particle Animation */
-        .particle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #fff;
-            border-radius: 50%;
-            animation: particle-animation 4s infinite;
-        }
-
-        @keyframes particle-animation {
-            0% {
-                transform: scale(0) translateX(0) translateY(0);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1) translateX(100px) translateY(100px);
-                opacity: 0.7;
-            }
-            100% {
-                transform: scale(0) translateX(200px) translateY(200px);
-                opacity: 0;
-            }
-        }
     </style>
 </head>
 <body>
-    <canvas id="particleCanvas"></canvas>
-
     <div class="container">
-        <h1>Admin Key Generator</h1>
-        <p>Select the expiration period for the key:</p>
-        <select class="select-time" id="time-period">
-            <option value="1">1 Hour</option>
-            <option value="24">1 Day</option>
-            <option value="48">2 Days</option>
-            <option value="72">3 Days</option>
-            <option value="168">1 Week</option>
+        <h1>Key Generator</h1>
+        <label for="duration">Select Duration:</label>
+        <select id="duration">
+            <option value="1">1 Day</option>
+            <option value="7">7 Days</option>
+            <option value="30">30 Days</option>
         </select>
-        <button onclick="generateKey()" class="generate-button">Generate Key</button>
-        <p id="generated-key" class="generated-key"></p>
+
+        <button onclick="generateKey()">Generate Key</button>
+
+        <div id="key-output" class="output"></div>
     </div>
 
     <script>
-        // Particle effect for background
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        function createParticles(event) {
-            const x = event.x;
-            const y = event.y;
-            const numberOfParticles = 20;
-
-            for (let i = 0; i < numberOfParticles; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                document.body.appendChild(particle);
-                const angle = Math.random() * Math.PI * 2;
-                const distance = Math.random() * 100;
-                const particleX = x + Math.cos(angle) * distance;
-                const particleY = y + Math.sin(angle) * distance;
-                particle.style.left = `${particleX}px`;
-                particle.style.top = `${particleY}px`;
-                particle.style.animationDuration = `${Math.random() * 2 + 2}s`;
-                setTimeout(() => particle.remove(), 4000);
-            }
-        }
-
-        canvas.addEventListener('mousemove', createParticles);
-
-        // Generate key and set expiration time
         function generateKey() {
-            const timePeriod = parseInt(document.getElementById('time-period').value) * 60 * 60 * 1000; // Convert to milliseconds
+            const duration = parseInt(document.getElementById('duration').value);
             const currentTime = new Date().getTime();
-            const expiryTime = currentTime + timePeriod; // Expiry time in future
+            const expiryTime = currentTime + (duration * 24 * 60 * 60 * 1000); // calculate expiration time
 
-            const generatedKey = "KEY" + Math.random().toString(36).substring(2, 10).toUpperCase();
+            // Generate a unique key (you can use a more complex method)
+            const generatedKey = `KEY-${Math.random().toString(36).substring(2, 12).toUpperCase()}`;
 
-            document.getElementById('generated-key').innerHTML = `Generated Key: ${generatedKey} <br> Expiry Time: ${new Date(expiryTime).toLocaleString()}`;
-
+            // Store the generated key and expiration time in localStorage (or in a database for real apps)
             localStorage.setItem('generatedKey', generatedKey);
             localStorage.setItem('expiryTime', expiryTime);
+
+            // Display the generated key and expiration time
+            const keyOutput = document.getElementById('key-output');
+            keyOutput.innerHTML = `
+                <strong>Generated Key:</strong> ${generatedKey} <br>
+                <strong>Expires in:</strong> ${duration} day(s) <br>
+                <strong>Expiry Time:</strong> ${new Date(expiryTime).toLocaleString()}
+            `;
         }
     </script>
 </body>
