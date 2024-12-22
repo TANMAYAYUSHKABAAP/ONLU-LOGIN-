@@ -4,96 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key Generator</title>
-    <style>
-        body {
-            background-color: #282c34;
-            color: white;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
 
-        .container {
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 30px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
-            text-align: center;
-        }
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDiw3bXv8nn7spyxvlL_DDyG9idkKdswLI",
+            authDomain: "tanmay-71094.firebaseapp.com",
+            databaseURL: "https://tanmay-71094-default-rtdb.firebaseio.com",
+            projectId: "tanmay-71094",
+            storageBucket: "tanmay-71094.appspot.com",
+            messagingSenderId: "411921161325",
+            appId: "1:411921161325:android:69c8bfe02ed3f0218b7364",
+            measurementId: "G-V2J59X5B2K"
+        };
 
-        h1 {
-            margin-bottom: 20px;
-            color: white;
-        }
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
+    </script>
 
-        select, input, button {
-            padding: 12px;
-            margin: 10px 0;
-            width: 100%;
-            border-radius: 5px;
-            border: none;
-            font-size: 16px;
-            background-color: #4b79a1;
-            color: white;
-            cursor: pointer;
-        }
-
-        button {
-            background-color: #2c3e50;
-        }
-
-        button:hover {
-            background-color: #567d9f;
-        }
-
-        .output {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #a4d7fd;
-        }
-
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Key Generator</h1>
-        <label for="duration">Select Duration:</label>
-        <select id="duration">
-            <option value="1">1 Day</option>
-            <option value="7">7 Days</option>
-            <option value="30">30 Days</option>
-        </select>
+    <!-- Your page content here -->
 
-        <button onclick="generateKey()">Generate Key</button>
-
-        <div id="key-output" class="output"></div>
-    </div>
-
+    <!-- Your script for key generation goes here -->
     <script>
-        function generateKey() {
-            const duration = parseInt(document.getElementById('duration').value);
-            const currentTime = new Date().getTime();
-            const expiryTime = currentTime + (duration * 24 * 60 * 60 * 1000); // calculate expiration time
-
-            // Generate a unique key (you can use a more complex method)
-            const generatedKey = `KEY-${Math.random().toString(36).substring(2, 12).toUpperCase()}`;
-
-            // Store the generated key and expiration time in localStorage (or in a database for real apps)
-            localStorage.setItem('generatedKey', generatedKey);
-            localStorage.setItem('expiryTime', expiryTime);
-
-            // Display the generated key and expiration time
-            const keyOutput = document.getElementById('key-output');
-            keyOutput.innerHTML = `
-                <strong>Generated Key:</strong> ${generatedKey} <br>
-                <strong>Expires in:</strong> ${duration} day(s) <br>
-                <strong>Expiry Time:</strong> ${new Date(expiryTime).toLocaleString()}
-            `;
+        async function generateKey() {
+            // Your existing key generation code
         }
     </script>
 </body>
