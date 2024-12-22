@@ -5,87 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access Verification</title>
     <style>
-        body {
-            background-color: royalblue;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            border-radius: 25px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            width: 300px;
-            border: 4px solid rgba(0, 0, 0, 0.5);
-            color: white;
-        }
-
-        h1 {
-            font-size: 26px;
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        .input-field {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            color: whitesmoke;
-            border: 2px solid black;
-            font-size: 16px;
-            background-color: rgba(0, 0, 0, 0.0);
-        }
-
-        input::placeholder {
-            color: white;
-        }
-
-        .verify-button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: #fff;
-            background-color: #3f65ba;
-            border: 2px solid black;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-            margin-top: 10px;
-        }
-
-        .verify-button:hover {
-            background-color: #3f65ba;
-        }
-
-        .message {
-            margin-top: 15px;
-            font-size: 16px;
-        }
-
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
+        /* Your CSS here */
     </style>
 </head>
 <body>
-    <!-- The particle canvas is positioned as the background -->
     <canvas id="particleCanvas"></canvas>
     
     <div class="container">
@@ -98,29 +21,26 @@
     
     <script src="password.js"></script>
     <script>
-        // Function to generate and display the random access number
         window.onload = function() {
             let randomNumber = localStorage.getItem('randomNumber');
             if (!randomNumber) {
-                randomNumber = Math.floor(Math.random() * 21); // Generate random number between 0 and 20
+                randomNumber = Math.floor(Math.random() * 21); // Generate random number
                 localStorage.setItem('randomNumber', randomNumber);
             }
             document.getElementById('random-number').innerText = "Your Access Number: " + randomNumber;
         };
 
-        // Function to verify the access key entered by the user
         function verifyAccessKey() {
             const randomNumber = localStorage.getItem('randomNumber');
             const userKey = document.getElementById('access-key').value.trim();
-            const correctKey = getKeyForNumber(randomNumber); // Get the correct key for the random number
+            const correctKey = getKeyForNumber(randomNumber); // Get the correct key for the number
             const messageElement = document.getElementById('message');
 
-            // Verify the entered key
             if (userKey === correctKey) {
                 messageElement.style.color = 'lightGreen';
                 messageElement.innerText = 'Access Granted!';
                 setTimeout(() => {
-                    window.location.href = 'main.html'; // Redirect to main.html after successful verification
+                    window.location.href = 'main.html'; // Correct redirect to main.html
                 }, 1000);
             } else {
                 messageElement.style.color = 'red';
