@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access Verification</title>
     <style>
-        /* Your CSS here */
+        /* Your existing styles here */
     </style>
 </head>
 <body>
+    <!-- Your HTML content -->
     <canvas id="particleCanvas"></canvas>
-    
     <div class="container">
         <h1>Access Verification</h1>
         <p id="random-number">Your Access Number: </p>
@@ -18,9 +18,12 @@
         <button onclick="verifyAccessKey()" class="verify-button">Verify</button>
         <p id="message" class="message"></p>
     </div>
-    
+
+    <!-- Include the password.js file here -->
     <script src="password.js"></script>
+    
     <script>
+        // This function runs when the page loads
         window.onload = function() {
             let randomNumber = localStorage.getItem('randomNumber');
             if (!randomNumber) {
@@ -30,17 +33,19 @@
             document.getElementById('random-number').innerText = "Your Access Number: " + randomNumber;
         };
 
+        // Function to verify the access key entered by the user
         function verifyAccessKey() {
             const randomNumber = localStorage.getItem('randomNumber');
             const userKey = document.getElementById('access-key').value.trim();
-            const correctKey = getKeyForNumber(randomNumber); // Get the correct key for the number
+            const correctKey = getKeyForNumber(randomNumber); // Use the function from password.js to get the correct key
+
             const messageElement = document.getElementById('message');
 
             if (userKey === correctKey) {
                 messageElement.style.color = 'lightGreen';
                 messageElement.innerText = 'Access Granted!';
                 setTimeout(() => {
-                    window.location.href = 'main.html'; // Correct redirect to main.html
+                    window.location.href = 'main.html'; // Redirect after successful verification
                 }, 1000);
             } else {
                 messageElement.style.color = 'red';
