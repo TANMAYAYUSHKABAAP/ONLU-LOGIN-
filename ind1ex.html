@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Verification</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+      body {
+    background-color: royalblue;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden; /* Prevents scrolling */
+    position: relative; /* Ensures positioning context for absolute elements */
+}
+
+.container {
+    position: relative; /* Stays in front of the canvas */
+    z-index: 1; /* Places it above the canvas */
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 300px;
+    border: 4px solid rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+h1 {
+    font-size: 26px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.input-field {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    color: whitesmoke;
+    border: 2px solid black;
+    font-size: 16px;
+    background-color: rgba(0, 0, 0, 0.0);
+}
+
+input::placeholder {
+  color: white;
+}
+
+.verify-button, .get-key-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #3f65ba;
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    margin-top: 10px;
+    margin-right: 5px;
+}
+
+.verify-button:hover, .get-key-button:hover {
+    background-color: #3f65ba;
+}
+
+.message {
+    margin-top: 15px;
+    font-size: 16px;
+    color: red;
+}
+
+.loading-animation {
+    width: 40px;
+    height: 40px;
+    border: 5px solid rgba(255, 255, 255, 0.9);
+    border-top: 5px solid #3f65ba;
+    border-radius: 50%;
+    margin: 20px auto;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    left: 41%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+    z-index: 2; /* In front of the container */
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Behind all other elements */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+    </style>
+</head>
+<body>
+    <!-- The particle canvas is positioned as the background -->
+    <canvas id="particleCanvas"></canvas>
+   
+    <div class="container">
+        <h1>Welcome to Access Verification</h1>
+        <h3><p id="random-number">Your Access number is: </p></h3>
+        <input type="text" id="user-key" placeholder="Enter your key" class="input-field">
+        <button onclick="verifyKey()" class="verify-button">Verify Key</button>
+        <div id="loading" class="loading-animation" style="display:none;"></div>
+        <p id="message" class="message"></p>
+        <!-- Get Your Key Button -->
+        <a href="https://t.me/MrbeanL8" target="_blank" class="get-key-button">Get Your Key</a>
+    </div>
+    
+    <script src="script.js"></script>
+    <script src="nn.js"></script>
+    <script>
+      // script.js
+
+// Function to get random number and save it in local storage
+window.onload = function() {
+    let randomNumber = localStorage.getItem('randomNumber');
+    if (!randomNumber) {
+        randomNumber = Math.floor(Math.random() * 21); // Generate random number between 0 to 20
+        localStorage.setItem('randomNumber', randomNumber);
+    }
+    document.getElementById('random-number').innerText = "Your Access number is: " + randomNumber;
+};
+
+// Function to verify the key entered by the user
+function verifyKey() {
+    const randomNumber = localStorage.getItem('randomNumber');
+    const userKey = document.getElementById('user-key').value;
+    const correctKey = getKeyForNumber(randomNumber); // Function to get the correct key for the number
+    const loadingElement = document.getElementById('loading');
+    const messageElement = document.getElementById('message');
+
+    // Show loading animation
+    loadingElement.style.display = 'block';
+    messageElement.innerText = '';
+    
+    setTimeout(() => {
+        loadingElement.style.display = 'none'; // Hide loading animation
+
+        // Verify the entered key
+        if (userKey === correctKey) {
+            messageElement.style.color = 'lightGreen';
+            messageElement.innerText = 'Key Verified Successfully!';
+            setTimeout(() => {
+                window.location.href = 'main.html'; // Redirect to main.html after key verification
+            }, 1000); // Wait 1 second before redirecting
+        } else {
+            messageElement.style.color = 'red';
+            messageElement.innerText = 'Incorrect Key. Please try again.';
+        }
+    }, 1500); // Simulate loading delay of 1.5 seconds
+}
+
+// Function to generate the correct key for a given random number
+function getKeyForNumber(number) {
+const keys = {
+       0: "TANMAYKING0",
+  1: "TANMAYKING1",
+  2: "TANMAYKING2",
+  3: "TANMAYKING3",
+  4: "TANMAYKING4",
+  5: "TANMAYKING5",
+  6: "TANMAYKING6",
+  7: "TANMAYKING7",
+  8: "TANMAYKING8",
+  9: "TANMAYKING9",
+  10: "TANMAYKING10",
+  11: "TANMAYKING11",
+  12: "TANMAYKING12",
+  13: "TANMAYKING13",
+  14: "TANMAYKING14",
+  15: "TANMAYKING15",
+  16: "TANMAYKING16",
+  17: "TANMAYKING17",
+  18: "TANMAYKING18",
+  19: "TANMAYKING19",
+  20: "TANMAYKING20"
+    };
+    return keys[number];
+}
+    </script>
+</body>
+</html>
