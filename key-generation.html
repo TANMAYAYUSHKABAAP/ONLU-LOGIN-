@@ -1,1 +1,96 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Key Generation</title>
+    <style>
+        body {
+            background-color: royalblue;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: white;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            width: 400px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .select-time {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            border: 2px solid white;
+            background-color: transparent;
+            color: white;
+        }
+        .generate-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #3f65ba;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .generate-button:hover {
+            background-color: #2f4b9a;
+        }
+        .generated-key {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #ff6600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Key Generator</h1>
+        <p>Select the expiration period for the key:</p>
+        <select class="select-time" id="time-period">
+            <option value="1">1 Hour</option>
+            <option value="24">1 Day</option>
+            <option value="48">2 Days</option>
+            <option value="72">3 Days</option>
+            <option value="168">1 Week</option>
+        </select>
+        <button onclick="generateKey()" class="generate-button">Generate Key</button>
+        <p id="generated-key" class="generated-key"></p>
+    </div>
+
+    <script>
+        // Function to generate a time-limited key for the user
+        function generateKey() {
+            const timePeriod = parseInt(document.getElementById('time-period').value) * 60 * 60 * 1000; // Convert to milliseconds
+            const currentTime = new Date().getTime();
+            const expiryTime = currentTime + timePeriod; // Expiry time in future
+
+            // Generate a random key
+            const generatedKey = "KEY" + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+            // Display the generated key and its expiry time
+            document.getElementById('generated-key').innerHTML = `Generated Key: ${generatedKey} <br> Expiry Time: ${new Date(expiryTime).toLocaleString()}`;
+
+            // Store the key and its expiry time in local storage (could be saved in DB in real-world scenario)
+            localStorage.setItem('generatedKey', generatedKey);
+            localStorage.setItem('expiryTime', expiryTime);
+            localStorage.setItem('keyUsed', false);  // Initially, no device has used the key
+        }
+    </script>
+</body>
+</html>
