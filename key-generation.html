@@ -4,27 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key Generator</title>
-    
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
-    
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDiw3bXv8nn7spyxvlL_DDyG9idkKdswLI",
-            authDomain: "tanmay-71094.firebaseapp.com",
-            databaseURL: "https://tanmay-71094-default-rtdb.firebaseio.com",
-            projectId: "tanmay-71094",
-            storageBucket: "tanmay-71094.appspot.com",
-            messagingSenderId: "411921161325",
-            appId: "1:411921161325:android:69c8bfe02ed3f0218b7364",
-            measurementId: "G-V2J59X5B2K"
-        };
-
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database(app);
-    </script>
-
     <style>
         body {
             background-color: #282c34;
@@ -77,7 +56,6 @@
             font-size: 18px;
             color: #a4d7fd;
         }
-
     </style>
 </head>
 <body>
@@ -95,32 +73,51 @@
         <div id="key-output" class="output"></div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
     <script>
-        async function generateKey() {
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDiw3bXv8nn7spyxvlL_DDyG9idkKdswLI",
+            authDomain: "tanmay-71094.firebaseapp.com",
+            databaseURL: "https://tanmay-71094-default-rtdb.firebaseio.com",
+            projectId: "tanmay-71094",
+            storageBucket: "tanmay-71094.appspot.com",
+            messagingSenderId: "411921161325",
+            appId: "1:411921161325:android:69c8bfe02ed3f0218b7364"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database(app);
+
+        function generateKey() {
             const duration = parseInt(document.getElementById('duration').value);
             const currentTime = new Date().getTime();
             const expiryTime = currentTime + (duration * 24 * 60 * 60 * 1000); // calculate expiration time
 
+            // Generate a unique key (you can use a more complex method)
             const generatedKey = `KEY-${Math.random().toString(36).substring(2, 12).toUpperCase()}`;
 
-            // Store the generated key and expiration time in Firebase
+            // Store the generated key and expiration time in Firebase Realtime Database
             const keyData = {
                 key: generatedKey,
                 expiryTime: expiryTime
             };
 
-            // Save data to Firebase database
-            firebase.database().ref('keys/' + generatedKey).set(keyData)
-                .then(() => {
-                    document.getElementById('key-output').innerHTML = `
-                        <strong>Generated Key:</strong> ${generatedKey} <br>
-                        <strong>Expires in:</strong> ${duration} day(s) <br>
-                        <strong>Expiry Time:</strong> ${new Date(expiryTime).toLocaleString()}
-                    `;
-                })
-                .catch((error) => {
-                    console.error("Error saving key to Firebase: ", error);
-                });
+            // Save the key in Firebase under a unique ID
+            const newKeyRef = database.ref('keys').push();
+            newKeyRef.set(keyData);
+
+            // Display the generated key and expiration time
+            const keyOutput = document.getElementById('key-output');
+            keyOutput.innerHTML = `
+                <strong>Generated Key:</strong> ${generatedKey} <br>
+                <strong>Expires in:</strong> ${duration} day(s) <br>
+                <strong>Expiry Time:</strong> ${new Date(expiryTime).toLocaleString()}
+            `;
         }
     </script>
 </body>
