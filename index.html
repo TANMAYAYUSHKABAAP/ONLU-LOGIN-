@@ -5,25 +5,203 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Access Verification</title>
     <style>
-        /* Your existing styles here */
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styles */
+        body {
+            background-color: royalblue;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Particle Animation Canvas */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Container for Form */
+        .container {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            width: 300px;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .container h1 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        /* Input Field Styles */
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            border: 2px solid white;
+            background-color: transparent;
+            color: white;
+        }
+
+        .input-field::placeholder {
+            color: lightgray;
+        }
+
+        /* Button Styles */
+        .verify-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #3f65ba;
+            border: 2px solid white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .verify-button:hover {
+            background-color: #2f4b9a;
+        }
+
+        /* Message Styles */
+        .message {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* Loading Animation */
+        .loading-animation {
+            width: 40px;
+            height: 40px;
+            border: 5px solid rgba(255, 255, 255, 0.8);
+            border-top: 5px solid #3f65ba;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        /* Spin Animation for Loader */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Particles */
+        .particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
     </style>
 </head>
 <body>
-    <!-- Your HTML content -->
-    <canvas id="particleCanvas"></canvas>
+
+    <!-- Particle Animation -->
+    <div class="particles-container">
+        <canvas id="particleCanvas"></canvas>
+    </div>
+
+    <!-- Main Container with Access Verification Form -->
     <div class="container">
         <h1>Access Verification</h1>
         <p id="random-number">Your Access Number: </p>
         <input type="text" id="access-key" placeholder="Enter your access key" class="input-field">
         <button onclick="verifyAccessKey()" class="verify-button">Verify</button>
         <p id="message" class="message"></p>
+        <div id="loading" class="loading-animation"></div>
     </div>
 
     <!-- Include the password.js file here -->
     <script src="password.js"></script>
-    
+
     <script>
-        // This function runs when the page loads
+        // Handle Particle Animation
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const colors = ['#FFFFFF', '#00C8FF', '#3F65BA'];
+
+        function Particle(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = Math.random() * 5 + 1;
+            this.speedX = Math.random() * 3 - 1.5;
+            this.speedY = Math.random() * 3 - 1.5;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        Particle.prototype.update = function() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.size > 0.2) this.size -= 0.1;
+            if (this.size <= 0.2) particles.splice(particles.indexOf(this), 1);
+        }
+
+        Particle.prototype.draw = function() {
+            ctx.fillStyle = this.color;
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function createParticles(e) {
+            const xPos = e.x;
+            const yPos = e.y;
+            for (let i = 0; i < 5; i++) {
+                particles.push(new Particle(xPos, yPos));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        canvas.addEventListener('mousemove', createParticles);
+        animateParticles();
+
+        // Handle Access Verification
         window.onload = function() {
             let randomNumber = localStorage.getItem('randomNumber');
             if (!randomNumber) {
@@ -33,24 +211,31 @@
             document.getElementById('random-number').innerText = "Your Access Number: " + randomNumber;
         };
 
-        // Function to verify the access key entered by the user
         function verifyAccessKey() {
             const randomNumber = localStorage.getItem('randomNumber');
             const userKey = document.getElementById('access-key').value.trim();
             const correctKey = getKeyForNumber(randomNumber); // Use the function from password.js to get the correct key
 
+            const loadingElement = document.getElementById('loading');
             const messageElement = document.getElementById('message');
 
-            if (userKey === correctKey) {
-                messageElement.style.color = 'lightGreen';
-                messageElement.innerText = 'Access Granted!';
-                setTimeout(() => {
-                    window.location.href = 'main.html'; // Redirect after successful verification
-                }, 1000);
-            } else {
-                messageElement.style.color = 'red';
-                messageElement.innerText = 'Invalid Key. Please try again.';
-            }
+            // Show loading animation
+            loadingElement.style.display = 'block';
+            messageElement.innerText = '';
+
+            setTimeout(() => {
+                loadingElement.style.display = 'none'; // Hide loading animation
+                if (userKey === correctKey) {
+                    messageElement.style.color = 'lightgreen';
+                    messageElement.innerText = 'Access Granted!';
+                    setTimeout(() => {
+                        window.location.href = 'main.html'; // Redirect to main.html
+                    }, 1000);
+                } else {
+                    messageElement.style.color = 'red';
+                    messageElement.innerText = 'Invalid Key. Please try again.';
+                }
+            }, 1500); // Simulate loading delay
         }
     </script>
 </body>
