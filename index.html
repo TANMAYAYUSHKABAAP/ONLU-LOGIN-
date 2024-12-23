@@ -3,107 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Validator</title>
+    <title>Key Verification</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
-            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            height: 100vh;
+            background-color: royalblue;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #ffffff;
+            height: 100vh;
+            margin: 0;
         }
-
-        .container {
-            background: rgba(0, 0, 0, 0.85);
-            border-radius: 12px;
-            padding: 30px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+        .verification-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
             text-align: center;
         }
-
-        h1 {
-            margin-bottom: 20px;
+        .verification-container h1 {
             font-size: 24px;
-            color: #ffffff;
+            margin-bottom: 20px;
         }
-
-        input, button {
+        .verification-container input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             margin: 10px 0;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            border: none;
             font-size: 16px;
-            outline: none;
-            transition: all 0.3s;
         }
-
-        input {
-            background: #34495e;
-            color: #ffffff;
-        }
-
-        input:focus {
-            background: #2c3e50;
-        }
-
-        button {
-            background: #3498db;
-            color: #ffffff;
-            font-weight: bold;
+        .verification-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: royalblue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
         }
-
-        button:hover {
-            background: #2980b9;
-        }
-
-        .output {
-            margin-top: 20px;
-            padding: 10px;
-            background: #17202a;
-            color: #76c7c0;
-            border-radius: 5px;
-            text-align: left;
-            word-wrap: break-word;
-            font-size: 14px;
+        .verification-container button:hover {
+            background-color: darkblue;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Key Validator</h1>
-        <input type="text" id="key-input" placeholder="Enter Key">
-        <button onclick="validateKey()">Validate Key</button>
-        <div id="key-output" class="output" style="display: none;"></div>
+    <div class="verification-container">
+        <h1>Enter Your Key</h1>
+        <input type="text" id="key" placeholder="Enter Key">
+        <button onclick="verifyKey()">Verify</button>
     </div>
-
     <script>
-        async function validateKey() {
-            // Assuming 'keys.json' file is deployed in the same directory
-            const keyInput = document.getElementById('key-input').value;
-
+        async function verifyKey() {
+            const key = document.getElementById('key').value;
             const response = await fetch('keys.json');
             const keys = await response.json();
 
-            const currentTime = new Date().getTime();
-            const validKey = keys.find(k => k.key === keyInput && k.expiryTime > currentTime);
-
-            const output = document.getElementById('key-output');
-            output.style.display = 'block';
-
-            if (validKey) {
-                output.innerHTML = `
-                    <strong>Status:</strong> Valid Key<br>
-                    <strong>Expires On:</strong> ${new Date(validKey.expiryTime).toLocaleString()}
-                `;
+            if (keys[key]) {
+                const expiration = new Date(keys[key]);
+                const now = new Date();
+                if (now < expiration) {
+                    alert('Access Granted!');
+                    window.location.href = 'main.html';
+                } else {
+                    alert('Key Expired!');
+                }
             } else {
-                output.innerHTML = `<strong>Status:</strong> Invalid or Expired Key`;
+                alert('Invalid Key!');
             }
         }
     </script>
