@@ -59,7 +59,7 @@
     <script>
         async function verifyKey() {
             const key = document.getElementById('key').value;
-            const response = await fetch('keys.json');
+            const response = await fetch('/keys');
             const keys = await response.json();
 
             if (keys[key]) {
