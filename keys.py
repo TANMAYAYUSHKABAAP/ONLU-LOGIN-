@@ -1,10 +1,11 @@
 import logging
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, CallbackContext
 import secrets
 import json
 import os
 from datetime import datetime, timedelta
+from flask import Flask, jsonify
 
 # Configure logging
 logging.basicConfig(
@@ -14,6 +15,9 @@ logger = logging.getLogger(__name__)
 
 # Path to store keys
 KEYS_FILE = "keys.json"
+
+# Flask app to serve keys
+app = Flask(__name__)
 
 # Load existing keys
 def load_keys():
@@ -27,6 +31,7 @@ def save_keys(keys):
     with open(KEYS_FILE, "w") as file:
         json.dump(keys, file, indent=4)
 
+# Telegram bot handlers
 def start(update: Update, context: CallbackContext) -> None:
     """Send a welcome message and bot usage instructions."""
     update.message.reply_text(
@@ -59,24 +64,32 @@ def generate_key(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("Error: Please provide a valid duration in hours.")
         logger.error(e)
 
+# Flask endpoint to serve keys.json
+@app.route("/keys", methods=["GET"])
+def serve_keys():
+    """Serve the keys file as JSON."""
+    keys = load_keys()
+    return jsonify(keys)
+
 def main():
-    """Start the bot."""
+    """Start the bot and Flask server."""
     # Your bot token from BotFather
     BOT_TOKEN = "7861057999:AAGkCLAsS8GSWRdrkHw3zuxh30FOXnNhh_w"
 
-    # Create the Updater and pass it your bot's token
-    updater = Updater(BOT_TOKEN)
-
-    # Get the dispatcher to register handlers
-    dispatcher = updater.dispatcher
+    # Create the Application
+    application = Application.builder().token(BOT_TOKEN).build()
 
     # Register command handlers
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("generate_key", generate_key))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("generate_key", generate_key))
 
-    # Start the bot
-    updater.start_polling()
-    updater.idle()
+    # Start the bot in a separate thread
+    from threading import Thread
+    bot_thread = Thread(target=application.run_polling, daemon=True)
+    bot_thread.start()
+
+    # Run the Flask server
+    app.run(host="0.0.0.0", port=5000)
 
 if __name__ == "__main__":
     # Ensure the keys file exists
